@@ -4,8 +4,6 @@ from typing import List, Type
 
 import decouple
 
-import dotenv
-
 from fastapi import FastAPI
 from fastapi.security import OAuth2PasswordBearer
 
@@ -20,8 +18,6 @@ from eshop.apps.test_app.app_config import TestAppConfig
 from framework.fastapi.app_config import IAppConfig
 
 from user_identity.app_config import UserIdentityAppConfig
-
-dotenv.load_dotenv('.env')
 
 INSTALLED_APPS: List[Type[IAppConfig]] = [
     TestAppConfig,

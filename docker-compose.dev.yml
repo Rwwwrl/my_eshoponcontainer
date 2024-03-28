@@ -14,7 +14,13 @@ services:
     ports:
       - 80:80
     volumes:
-      - ./:/usr/code/myeshop
+      - .eshop/:/usr/code/myeshop/eshop/
+    environment:
+      - DB_HOST=postgres_db
+      - DB_NAME=${DB_NAME}
+      - DB_USER_LOGIN=${DB_USER_LOGIN}
+      - DB_USER_PASSWORD=${DB_USER_PASSWORD}
+      - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
     depends_on:
       postgres_db:
         condition: service_healthy
@@ -29,8 +35,6 @@ services:
       - POSTGRES_DB=${DB_NAME}
     volumes:
       - postgres_db_data_dev:/var/lib/postgresql/data
-    # ports:
-    #   - 15432:5432
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 1s

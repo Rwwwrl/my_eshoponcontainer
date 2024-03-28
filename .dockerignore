@@ -1,13 +1,30 @@
 **/*.pyc
 **/__pycache__
-
 .pytest_cache
+**/.git
+**/.gitignore
+**/.github
+**/.DS_Store
+**/env
+**/.vscode
+**/.env
 
-.env.example
+README.md
+deploy
+!deploy/uvicorn/uvicorn_run.py
+Dockerfile
+docker-compose.*.yml
 
-# local
+setup.cfg
+.pre-commit-config.yaml
+.yapfignore
+
+build_dev.sh
 build_prod.sh
-build_tests.sh
-up_and_build_prod.sh
-up_and_build_tests.sh
-up_and_build_dev.sh
+build_local_prod.sh
+down_dev.sh
+down_prod.sh
+down_local_prod.sh
+up_dev.sh
+up_prod.sh
+up_local_prod.sh

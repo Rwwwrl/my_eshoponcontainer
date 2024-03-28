@@ -11,6 +11,12 @@ services:
     container_name: web_app_prod
     ports:
       - 80:80
+    environment:
+      - DB_HOST=postgres_db
+      - DB_NAME=${DB_NAME}
+      - DB_USER_LOGIN=${DB_USER_LOGIN}
+      - DB_USER_PASSWORD=${DB_USER_PASSWORD}
+      - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
     depends_on:
       postgres_db:
         condition: service_healthy
@@ -45,6 +51,7 @@ services:
     build:
       context: deploy/prometheus/
       dockerfile: Dockerfile
+    image: myeshop/prometheus
     container_name: prometheus
     ports:
       - 9090:9090

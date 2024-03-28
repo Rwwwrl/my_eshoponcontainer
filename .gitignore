@@ -14,7 +14,3 @@
 
 # secret
 .env
-
-.yapfignore
-setup.cfg
-.pre-commit-config.yaml
