@@ -3,7 +3,7 @@ name: "eshop ci"
 on:
   pull_request:
   push:
-    branches: ["main"]
+    # branches: ["main"]
 
 env:
   WORK_BRANCH_NAME: main
@@ -75,7 +75,7 @@ jobs:
 
   build_and_push_to_dockerhub:
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
     env:
       LAST_GIT_COMMIT_SHA: ${{ github.event.head_commit.id }}
 
@@ -111,7 +111,7 @@ jobs:
           cache-to: type=gha,mode=max
 
       - name: Build and push to docker hub prometheus
-        if: steps.changes.outputs.prometheus_docker_context == 'true'
+        # if: steps.changes.outputs.prometheus_docker_context == 'true'
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/prometheus"
@@ -119,7 +119,7 @@ jobs:
           tags: rwwwrl/myeshop_prometheus:${{ env.WORK_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub nginx
-        if: steps.changes.outputs.nginx_docker_context == 'true'
+        # if: steps.changes.outputs.nginx_docker_context == 'true'
         uses: docker/build-push-action@v5
         with:
           context: "{{ defaultContext }}:deploy/nginx"
@@ -129,7 +129,7 @@ jobs:
   pull_main_latest_and_restart_server_on_test_machine:
     needs: build_and_push_to_dockerhub
     runs-on: ubuntu-latest
-    if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
+    # if: ${{ github.event_name == 'push' && github.ref == 'refs/heads/main' }}
 
     steps:
       - name: Setup ssh
