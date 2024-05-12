@@ -34,7 +34,7 @@ services:
       - POSTGRES_PASSWORD=${DB_USER_PASSWORD}
       - POSTGRES_DB=${DB_NAME}
     volumes:
-      - postgres_db_data_dev:/var/lib/postgresql/data
+      - postgres_db_data:/var/lib/postgresql/data
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U ${DB_USER_LOGIN}" ]
       interval: 1s
@@ -42,4 +42,4 @@ services:
       retries: 30
 
 volumes:
-  postgres_db_data_dev:
+  postgres_db_data:

@@ -12,6 +12,9 @@ services:
       context: deploy/nginx
       target: local_prod_build
     image: rwwwrl/myeshop_nginx:local_prod
+    ports:
+      - 80:80
+      - 3000:3000
 
   loki_read:
     build:

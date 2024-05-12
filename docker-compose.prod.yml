@@ -3,115 +3,38 @@ version: "3.9"
 services:
   web_app:
     image: rwwwrl/myeshop_web_app:main_latest
-    command: python deploy/uvicorn/uvicorn_run.py
-    environment:
-      - DB_HOST=postgres_db
-      - DB_NAME=${POSTGRES_DB_NAME}
-      - DB_USER_LOGIN=${POSTGRES_DB_USER_LOGIN}
-      - DB_USER_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
-      - USER_IDENTITY_SERVICE_SECRET=${USER_IDENTITY_SERVICE_SECRET}
-    container_name: web_app
-    volumes:
-      - uvicorn_socket_folder:/usr/uvicorn_socket_folder
-    depends_on:
-      postgres_db:
-        condition: service_healthy
 
   nginx:
     image: rwwwrl/myeshop_nginx:main_latest
-    container_name: nginx
     volumes:
-      - uvicorn_socket_folder:/usr/uvicorn_socket_folder
-      - certbot_letsencrypt:/etc/letsencrypt
-      - certbot_www:/var/www/certbot
+      - ssl_certificates_certbot_letsencrypt:/etc/letsencrypt
+      - ssl_certificates_certbot_www:/var/www/certbot
     ports:
       - 80:80
       - 443:443
       - 3000:3000
-    depends_on:
-      - web_app
 
   loki_read:
     image: rwwwrl/myeshop_loki:main_latest
-    container_name: loki_read
-    command: "-config.file=/etc/loki/config.yaml -target=read -config.expand-env=true"
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-    depends_on:
-      - minio
 
   loki_write:
     image: rwwwrl/myeshop_loki:main_latest
-    container_name: loki_write
-    command: "-config.file=/etc/loki/config.yaml -target=write -config.expand-env=true"
-    depends_on:
-      - minio
 
   minio:
     image: rwwwrl/myeshop_minio:main_latest
-    container_name: minio
-    environment:
-      - MINIO_ROOT_USER=${MINIO_ROOT_USER}
-      - MINIO_ROOT_PASSWORD=${MINIO_ROOT_PASSWORD}
-      - MINIO_PROMETHEUS_AUTH_TYPE=public
-      - MINIO_UPDATE=off
-    volumes:
-      - minio_data:/data
 
   promtail:
     image: rwwwrl/myeshop_promtail:main_latest
-    container_name: promtail
-    volumes:
-      - /var/run/docker.sock:/var/run/docker.sock
-    command: -config.file=/etc/promtail/config.yaml
-    depends_on:
-      - nginx
-
-  postgres_db:
-    image: postgres:14
-    container_name: postgres_db
-    restart: always
-    environment:
-      - POSTGRES_USER=${POSTGRES_DB_USER_LOGIN}
-      - POSTGRES_PASSWORD=${POSTGRES_DB_USER_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB_NAME}
-    volumes:
-      - postgres_db_data_prod:/var/lib/postgresql/data
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U ${POSTGRES_DB_USER_LOGIN}" ]
-      interval: 1s
-      timeout: 3s
-      retries: 30
-
-  node_exporter:
-    image: quay.io/prometheus/node-exporter:latest
-    container_name: node_exporter
-    command:
-      - '--path.rootfs=/host'
-    volumes:
-      - '/:/host:ro,rslave'
 
   prometheus:
     image: rwwwrl/myeshop_prometheus:main_latest
-    container_name: prometheus
-    volumes:
-      - prometheus_data:/prometheus
 
   grafana:
     image: rwwwrl/myeshop_grafana:main_latest
-    container_name: grafana
-    environment:
-      - GF_SECURITY_ADMIN_USER=${GRAFANA_ADMIN_USERNAME}
-      - GF_SECURITY_ADMIN_PASSWORD=${GRAFANA_ADMIN_PASSWORD}
-    volumes:
-      - grafana_data:/var/lib/grafana
 
 volumes:
-  postgres_db_data_prod:
-  prometheus_data:
-  grafana_data:
-  uvicorn_socket_folder:
-  minio_data:
-  certbot_letsencrypt:
-  certbot_www:
+  ssl_certificates_certbot_letsencrypt:
+    external: true
+
+  ssl_certificates_certbot_www:
+    external: true

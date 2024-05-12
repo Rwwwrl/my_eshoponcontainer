@@ -6,7 +6,8 @@ services:
     build:
       context: deploy/nginx
       target: to_create_ssl_certificates_build
-    container_name: nging_ssl_certificates
+    image: nginx_ssl_certificates
+    container_name: nginx_ssl_certificates
     volumes:
       - certbot_letsencrypt:/etc/letsencrypt
       - certbot_www:/var/www/certbot
