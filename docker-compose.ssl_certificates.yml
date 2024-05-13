@@ -3,10 +3,7 @@ version: "3.9"
 services:
 
   nginx:
-    build:
-      context: deploy/nginx
-      target: to_create_ssl_certificates_build
-    image: nginx_ssl_certificates
+    image: rwwwrl/myeshop_nginx_to_create_ssl_certificates_build:main_latest
     container_name: nginx_ssl_certificates
     volumes:
       - certbot_letsencrypt:/etc/letsencrypt

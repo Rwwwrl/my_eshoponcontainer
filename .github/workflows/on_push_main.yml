@@ -29,7 +29,9 @@ jobs:
         with:
           filters: |
             nginx_docker_context:
-              - 'deploy/nginx/**'
+              - 'deploy/nginx/prod_build|Dockerfile'
+            nginx_sll_certificates_build_docker_context:
+              - 'deploy/nginx/to_create_ssl_certificates_build|Dockerfile'
             prometheus_docker_context:
               - 'deploy/prometheus/**'
             grafana_docker_context:
@@ -68,6 +70,15 @@ jobs:
           target: prod_build
           push: true
           tags: rwwwrl/myeshop_nginx:${{ env.WORK_BRANCH_NAME }}_latest
+
+      - name: Build and push to docker hub nginx_to_create_ssl_certificates_build
+        if: steps.changes.outputs.nginx_sll_certificates_build_docker_context == 'true'
+        uses: docker/build-push-action@v5
+        with:
+          context: "{{ defaultContext }}:deploy/nginx"
+          target: to_create_ssl_certificates_build
+          push: true
+          tags: rwwwrl/myeshop_nginx_to_create_ssl_certificates_build:${{ env.WORK_BRANCH_NAME }}_latest
 
       - name: Build and push to docker hub grafana
         if: steps.changes.outputs.grafana_docker_context == 'true'
