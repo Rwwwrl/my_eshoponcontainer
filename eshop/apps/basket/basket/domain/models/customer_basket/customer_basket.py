@@ -1,21 +1,23 @@
-from __future__ import annotations
+from typing import List
 
-from typing import List, TYPE_CHECKING
-
-from sqlalchemy import INTEGER
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from pydantic import BaseModel
 
 from basket import hints
-from basket.app_config import BasketAppConfig
 
-if TYPE_CHECKING:
-    from ..basket_item import BasketItem
+__all__ = ('CustomerBasket', )
 
 
-class CustomerBasket(BasketAppConfig.get_sqlalchemy_base()):
+class BasketItem(BaseModel):
+    id: hints.BasketItemId
+    basket_pk: hints.BuyerId
+    product_id: hints.ProductId
+    product_name: hints.ProductName
+    unit_price: hints.Price
+    quantity: hints.Quantity
+    picture_url: hints.PictureUrl
 
-    __tablename__ = 'customer_basket'
 
-    buyer_id: Mapped[hints.CustomerId] = mapped_column(INTEGER, primary_key=True)
+class CustomerBasket(BaseModel):
 
-    basket_items: Mapped[List[BasketItem]] = relationship(back_populates='basket')
+    buyer_id: hints.BuyerId
+    basket_items: List[BasketItem]

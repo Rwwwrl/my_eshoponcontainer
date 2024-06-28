@@ -2,7 +2,8 @@ from typing import NewType
 
 # TODO в задаче ESHOP-48 это заменится на pydantic.FieldTypes
 
-CustomerId = NewType('CustomerId', int)
+BuyerId = NewType('BuyerId', int)
+CustomerBasketPK = NewType('CustomerBasketPK', BuyerId)
 
 BasketItemId = NewType('BasketItemId', int)
 ProductId = NewType('ProductId', int)
