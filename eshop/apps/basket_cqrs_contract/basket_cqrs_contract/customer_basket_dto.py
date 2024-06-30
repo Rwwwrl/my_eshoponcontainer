@@ -1,4 +1,4 @@
-from typing import List, final
+from typing import List, Union, final
 
 from basket_cqrs_contract import hints
 
@@ -7,7 +7,8 @@ from framework.common.dto import DTO
 
 @final
 class BasketItemDTO(DTO):
-    id: hints.BasketItemId
+    # None в случае, если объет находится в стадии "Transient"
+    id: Union[hints.BasketItemId, None]
     product_id: hints.ProductId
     product_name: hints.ProductName
     unit_price: hints.Price
@@ -17,5 +18,5 @@ class BasketItemDTO(DTO):
 
 @final
 class CustomerBasketDTO(DTO):
-    buyer_id: hints.CustomerId
+    buyer_id: hints.BuyerId
     basket_items: List[BasketItemDTO]
