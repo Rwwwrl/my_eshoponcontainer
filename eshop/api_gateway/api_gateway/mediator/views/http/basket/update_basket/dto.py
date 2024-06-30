@@ -1,17 +1,19 @@
 from typing import List, NewType, final
 
+from pydantic.types import PositiveInt
+
 from framework.common.dto import DTO
 
-ProductId = NewType('ProductId', int)
+ProductId = NewType('ProductId', PositiveInt)
 
 
 @final
 class UpdateBasketRequestItemData(DTO):
     product_id: ProductId
-    quantity: int
+    quantity: PositiveInt
 
 
 @final
 class UpdateBasketRequestData(DTO):
-    buyer_id: int
+    buyer_id: PositiveInt
     basket_items: List[UpdateBasketRequestItemData]

@@ -1,11 +1,11 @@
 from collections import defaultdict
-from typing import Annotated, Dict, List, Set
+from typing import Annotated, Dict, Final, List, Set
 
 from fastapi import Depends, status
 from fastapi.responses import Response
 
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
-from basket_cqrs_contract.command.command import BasketItemDTO
+from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
 
 import catalog_cqrs_contract.hints
 from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
@@ -75,7 +75,7 @@ def update_basket(
         raise BadRequestException(detail='basket must have at least one basket item')
 
     request_data = _normalize_request_data(request_data=request_data)
-    request_data_product_ids: List[int] = [bi.product_id for bi in request_data.basket_items]
+    request_data_product_ids: List[ProductId] = [bi.product_id for bi in request_data.basket_items]
 
     catalog_items = CatalogItemsByIdsQuery(ids=request_data_product_ids).fetch()
     catalog_items_identity_map: Dict[catalog_cqrs_contract.hints.CatalogItemId, CatalogItemDTO] = {
@@ -93,21 +93,25 @@ def update_basket(
             detail=f'basket refer to non-existing products, invalid products: {e.invalid_product_ids}',
         )
 
-    basket_updated_basket_items: List[BasketItemDTO] = []
+    basket_items: Final[List[BasketItemDTO]] = []
     for basket_request_item_data in request_data.basket_items:
-        product_id = basket_request_item_data.product_id
-        basket_updated_basket_items.append(
+        catalog_item = catalog_items_identity_map[basket_request_item_data.product_id]
+        basket_items.append(
             BasketItemDTO(
+                id=None,
                 product_id=basket_request_item_data.product_id,
-                product_name=catalog_items_identity_map[product_id].name,
-                unit_price=catalog_items_identity_map[product_id].price,
+                product_name=catalog_item.name,
+                unit_price=catalog_item.price,
                 quantity=basket_request_item_data.quantity,
-                picture_url=catalog_items_identity_map[product_id].picture_url,
+                picture_url=catalog_item.picture_url,
             ),
         )
 
     try:
-        UpdateCustomerBasketCommand(buyer_id=user_id, basket_items=basket_updated_basket_items).execute()
+        UpdateCustomerBasketCommand(customer_basket=CustomerBasketDTO(
+            buyer_id=user_id,
+            basket_items=basket_items,
+        )).execute()
     except CQRSException:
         raise InternalServerError(
             detail=f'failed to update basket due to {UpdateCustomerBasketCommand.__name__} failed',
