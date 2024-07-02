@@ -1,13 +1,13 @@
 from typing import NewType
 
-# TODO в задаче ESHOP-48 это заменится на pydantic.FieldTypes
+from pydantic.types import PositiveFloat, PositiveInt
 
-CustomerId = NewType('CustomerId', int)
+CustomerId = NewType('CustomerId', PositiveInt)
+BuyerId = NewType('BuyerId', CustomerId)
 
-BasketItemId = NewType('BasketItemId', int)
-ProductId = NewType('ProductId', int)
-
+BasketItemId = NewType('BasketItemId', PositiveInt)
+ProductId = NewType('ProductId', PositiveInt)
 ProductName = NewType('ProductName', str)
-Price = NewType('Price', float)
-Quantity = NewType('Quantity', int)
+Price = NewType('Price', PositiveFloat)
+Quantity = NewType('Quantity', PositiveInt)
 PictureUrl = NewType('PictureUrl', str)

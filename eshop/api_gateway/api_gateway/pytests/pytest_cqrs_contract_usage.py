@@ -1,14 +1,13 @@
-from typing import List
+from typing import List, Union
 
 import pytest
 
 from pytest_check import check
 
-import basket_cqrs_contract.command.command
 import basket_cqrs_contract.hints
 from basket_cqrs_contract.command import UpdateCustomerBasketCommand
+from basket_cqrs_contract.customer_basket_dto import BasketItemDTO, CustomerBasketDTO
 from basket_cqrs_contract.query import CustomerBasketQuery
-from basket_cqrs_contract.query.query_response import BasketItemDTO, CustomerBasketDTO
 
 import catalog_cqrs_contract.hints
 from catalog_cqrs_contract.query import CatalogItemsByIdsQuery
@@ -43,31 +42,36 @@ class TestUpdateCustomerBasketCommand(ITestCommandContract[UpdateCustomerBasketC
         with check:
             assert_attribute(
                 UpdateCustomerBasketCommand,
-                'buyer_id',
-                basket_cqrs_contract.hints.CustomerId,
+                'customer_basket',
+                CustomerBasketDTO,
             )
             assert_attribute(
-                UpdateCustomerBasketCommand,
+                CustomerBasketDTO,
                 'basket_items',
-                List[basket_cqrs_contract.command.command.BasketItemDTO],
+                List[BasketItemDTO],
             )
             assert_attribute(
-                basket_cqrs_contract.command.command.BasketItemDTO,
+                BasketItemDTO,
+                'id',
+                Union[basket_cqrs_contract.hints.BasketItemId, None],
+            )
+            assert_attribute(
+                BasketItemDTO,
                 'product_id',
                 basket_cqrs_contract.hints.ProductId,
             )
             assert_attribute(
-                basket_cqrs_contract.command.command.BasketItemDTO,
+                BasketItemDTO,
                 'product_name',
                 basket_cqrs_contract.hints.ProductName,
             )
             assert_attribute(
-                basket_cqrs_contract.command.command.BasketItemDTO,
+                BasketItemDTO,
                 'quantity',
                 basket_cqrs_contract.hints.Quantity,
             )
             assert_attribute(
-                basket_cqrs_contract.command.command.BasketItemDTO,
+                BasketItemDTO,
                 'picture_url',
                 basket_cqrs_contract.hints.PictureUrl,
             )
@@ -89,7 +93,7 @@ class TestCustomerBasketQuery(ITestQueryContract[CustomerBasketQuery]):
             assert response_type == CustomerBasketDTO
 
             assert_attribute(CustomerBasketDTO, 'basket_items', List[BasketItemDTO])
-            assert_attribute(BasketItemDTO, 'id', basket_cqrs_contract.hints.BasketItemId)
+            assert_attribute(BasketItemDTO, 'id', Union[basket_cqrs_contract.hints.BasketItemId, None])
             assert_attribute(BasketItemDTO, 'product_id', basket_cqrs_contract.hints.ProductId)
             assert_attribute(BasketItemDTO, 'product_name', basket_cqrs_contract.hints.ProductName)
             assert_attribute(BasketItemDTO, 'unit_price', basket_cqrs_contract.hints.Price)

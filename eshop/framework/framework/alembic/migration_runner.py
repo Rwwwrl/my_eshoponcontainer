@@ -9,6 +9,7 @@ from sqlalchemy.schema import CreateSchema
 from eshop import settings
 
 from framework.app_config import IAppConfig
+from framework.sqlalchemy.dialects.postgres.pydantic_type import PydanticType
 
 
 def init_alembic_logging():
@@ -33,6 +34,11 @@ class MigrationRunner:
         else:
             return True
 
+    def _render_item(self, type_, obj, autogen_context):
+        if type_ == "type" and isinstance(obj, PydanticType):
+            return "JSONB()"
+        return False
+
     def _run_migrations_online(self) -> None:
         """Run migrations in 'online' mode.
 
@@ -49,6 +55,7 @@ class MigrationRunner:
                 version_table_schema=self._target_metadata.schema,
                 include_schemas=True,
                 include_name=self._include_name,
+                render_item=self._render_item,
             )
 
             connection.execute(CreateSchema(name=self._target_metadata.schema, if_not_exists=True))
@@ -75,6 +82,7 @@ class MigrationRunner:
             dialect_opts={"paramstyle": "named"},
             include_schemas=True,
             include_name=self._include_name,
+            render_item=self._render_item,
         )
 
         with context.begin_transaction():
