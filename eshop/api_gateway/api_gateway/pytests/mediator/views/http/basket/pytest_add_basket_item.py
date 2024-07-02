@@ -116,6 +116,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                 buyer_id=1,
                 basket_items=[
                     BasketItemDTO(
+                        id=1,
                         product_id=1,
                         product_name='product_name1',
                         unit_price=10,
@@ -123,6 +124,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                         picture_url='picture_url1',
                     ),
                     BasketItemDTO(
+                        id=2,
                         product_id=2,
                         product_name='product_name2',
                         unit_price=20,
@@ -130,6 +132,7 @@ def test_case_basket_does_not_have_basket_item() -> TestCaseBasketDoesNotHaveBas
                         picture_url='picture_url2',
                     ),
                     BasketItemDTO(
+                        id=None,
                         product_id=3,
                         product_name='product_name3',
                         unit_price=10,
@@ -190,6 +193,7 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
                 buyer_id=1,
                 basket_items=[
                     BasketItemDTO(
+                        id=1,
                         product_id=1,
                         product_name='product_name1',
                         unit_price=10,
@@ -197,6 +201,7 @@ def test_case_basket_already_have_basket_item() -> TestCaseBasketAlreadyHaveBask
                         picture_url='picture_url1',
                     ),
                     BasketItemDTO(
+                        id=2,
                         product_id=2,
                         product_name='product_name2',
                         unit_price=20,
@@ -256,6 +261,7 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
                 buyer_id=1,
                 basket_items=[
                     BasketItemDTO(
+                        id=1,
                         product_id=1,
                         product_name='product_name1',
                         unit_price=10,
@@ -263,6 +269,7 @@ def test_case_update_customer_basket_command_execute_cqrs_exception() -> TestCas
                         picture_url='picture_url1',
                     ),
                     BasketItemDTO(
+                        id=2,
                         product_id=2,
                         product_name='product_name2',
                         unit_price=20,

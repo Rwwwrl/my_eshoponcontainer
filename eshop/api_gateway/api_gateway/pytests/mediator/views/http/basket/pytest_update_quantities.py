@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Any, cast
 
 from fastapi import HTTPException, status
 
@@ -116,6 +116,7 @@ def test_case_success() -> TestCaseSuccess:
                 buyer_id=1,
                 basket_items=[
                     BasketItemDTO(
+                        id=1,
                         product_id=1,
                         product_name='product_name1',
                         unit_price=10,
@@ -123,6 +124,7 @@ def test_case_success() -> TestCaseSuccess:
                         picture_url='picture_url1',
                     ),
                     BasketItemDTO(
+                        id=2,
                         product_id=2,
                         product_name='product_name2',
                         unit_price=20,
@@ -306,6 +308,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                 buyer_id=1,
                 basket_items=[
                     BasketItemDTO(
+                        id=1,
                         product_id=1,
                         product_name='product_name1',
                         unit_price=10,
@@ -313,6 +316,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                         picture_url='picture_url1',
                     ),
                     BasketItemDTO(
+                        id=2,
                         product_id=2,
                         product_name='product_name2',
                         unit_price=20,
@@ -351,6 +355,10 @@ class TestUrlToView(TestClass[update_quantities]):
 
 
 class TestViewUpdateQuantities(TestClass[update_quantities]):
+    @staticmethod
+    def _assert(fact: Any, expected: Any) -> None:
+        assert fact == expected
+
     @patch.object(UpdateCustomerBasketCommand, 'execute')
     @patch.object(UpdateCustomerBasketCommand, '__init__')
     @patch.object(CustomerBasketQuery, 'fetch')

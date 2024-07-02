@@ -93,7 +93,7 @@ class TestCustomerBasketQuery(ITestQueryContract[CustomerBasketQuery]):
             assert response_type == CustomerBasketDTO
 
             assert_attribute(CustomerBasketDTO, 'basket_items', List[BasketItemDTO])
-            assert_attribute(BasketItemDTO, 'id', basket_cqrs_contract.hints.BasketItemId)
+            assert_attribute(BasketItemDTO, 'id', Union[basket_cqrs_contract.hints.BasketItemId, None])
             assert_attribute(BasketItemDTO, 'product_id', basket_cqrs_contract.hints.ProductId)
             assert_attribute(BasketItemDTO, 'product_name', basket_cqrs_contract.hints.ProductName)
             assert_attribute(BasketItemDTO, 'unit_price', basket_cqrs_contract.hints.Price)

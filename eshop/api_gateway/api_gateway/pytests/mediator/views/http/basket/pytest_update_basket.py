@@ -1,4 +1,4 @@
-from typing import List, cast
+from typing import Any, List, cast
 
 from fastapi import HTTPException, status
 
@@ -26,12 +26,15 @@ from framework.for_pytests.for_testing_http_views import ExpectedHttpResponse, E
 from framework.for_pytests.test_case import TestCase
 from framework.for_pytests.test_class import TestClass
 
+import user_identity_cqrs_contract.hints
+
 
 class ExpectedUpdateCustomerBasketCommandInitCallArgs(TypedDict):
     customer_basket: CustomerBasketDTO
 
 
 class TestCaseSuccess(TestCase):
+    user_id: user_identity_cqrs_contract.hints.UserId
     request_data: UpdateBasketRequestData
     mock__catalog_item_by_ids_query__fetch__return_value: List[CatalogItemDTO]
     expected_update_customerer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs
@@ -58,6 +61,8 @@ class TestCase500FailedToUpdateBasketDueToUpdateCustomerBasketCommandFailed(Test
 
 @pytest.fixture(scope='session')
 def test_case_success() -> TestCaseSuccess:
+    user_id = 1
+
     request_data = UpdateBasketRequestData(
         buyer_id=1,
         basket_items=[
@@ -120,29 +125,28 @@ def test_case_success() -> TestCaseSuccess:
             CustomerBasketDTO(
                 buyer_id=1,
                 basket_items=[
-                    [
-                        BasketItemDTO(
-                            id=None,
-                            product_id=1,
-                            product_name='name1',
-                            unit_price=100,
-                            quantity=1,
-                            picture_url='picture_url1',
-                        ),
-                        BasketItemDTO(
-                            id=None,
-                            product_id=2,
-                            product_name='name2',
-                            unit_price=200,
-                            quantity=2,
-                            picture_url='picture_url2',
-                        ),
-                    ],
+                    BasketItemDTO(
+                        id=None,
+                        product_id=1,
+                        product_name='name1',
+                        unit_price=100,
+                        quantity=1,
+                        picture_url='picture_url1',
+                    ),
+                    BasketItemDTO(
+                        id=None,
+                        product_id=2,
+                        product_name='name2',
+                        unit_price=200,
+                        quantity=2,
+                        picture_url='picture_url2',
+                    ),
                 ],
             ),
     }
 
     return TestCaseSuccess(
+        user_id=user_id,
         request_data=request_data,
         mock__catalog_item_by_ids_query__fetch__return_value=mock__catalog_item_by_ids_query__fetch__return_value,
         expected_update_customerer_basket_command_init_call_args=(
@@ -298,11 +302,12 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
     ]
 
     expected_update_customerer_basket_command_init_call_args: ExpectedUpdateCustomerBasketCommandInitCallArgs = {
-        'customer_data':
+        'customer_basket':
             CustomerBasketDTO(
                 buyer_id=1,
                 basket_items=[
                     BasketItemDTO(
+                        id=None,
                         product_id=1,
                         product_name='name1',
                         unit_price=100,
@@ -310,6 +315,7 @@ def test_case_500_failed_to_update_basket_due_to_UpdateCustomerBasketCommand_fai
                         picture_url='picture_url1',
                     ),
                     BasketItemDTO(
+                        id=None,
                         product_id=2,
                         product_name='name2',
                         unit_price=200,
@@ -341,6 +347,10 @@ class TestUrlToView(TestClass[update_basket]):
 
 
 class TestViewUpdateBasket(TestClass[update_basket]):
+    @staticmethod
+    def _assert(fact: Any, expected: Any) -> None:
+        assert fact == expected
+
     @patch.object(UpdateCustomerBasketCommand, 'execute')
     @patch.object(UpdateCustomerBasketCommand, '__init__')
     @patch.object(CatalogItemsByIdsQuery, 'fetch')
@@ -358,7 +368,7 @@ class TestViewUpdateBasket(TestClass[update_basket]):
             test_case.mock__catalog_item_by_ids_query__fetch__return_value
         )
 
-        response = update_basket(request_data=test_case.request_data, user_id=1)
+        response = update_basket(request_data=test_case.request_data, user_id=test_case.user_id)
         assert response.status_code == test_case.expected_http_response.status_code
         assert response.body == test_case.expected_http_response.body
 
