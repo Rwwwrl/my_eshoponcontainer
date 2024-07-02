@@ -1,10 +1,12 @@
-from typing import List, TypedDict, cast
+from typing import List, cast
 
 from fastapi import HTTPException, status
 
 from mock import Mock, patch
 
 import pytest
+
+from typing_extensions import TypedDict
 
 from api_gateway.mediator.views.http.basket.api_router import api_router
 from api_gateway.mediator.views.http.basket.update_basket import update_basket
